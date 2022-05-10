@@ -1,68 +1,74 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-import bugImageUrl from "../assets/bug.svg";
-import ideaImageUrl from "../assets/idea.svg";
-import thoughtImageUrl from "../assets/thought.svg";
+import bugImageUrl from '../assets/bug.svg'
+import ideaImageUrl from '../assets/idea.svg'
+import thoughtImageUrl from '../assets/thought.svg'
 
-import { FeedbackTypeStep } from "./WidgetForm/Steps/FeedbackTypeStep";
-import { FeedbackContentStep } from "./WidgetForm/Steps/FeedbackContentStep";
+import { FeedbackTypeStep } from './WidgetForm/Steps/FeedbackTypeStep'
+import { FeedbackContentStep } from './WidgetForm/Steps/FeedbackContentStep'
+import { FeedbackSuccessStep } from './WidgetForm/Steps/FeedbackSuccessStep'
 
 export const feedbackTypes = {
   BUG: {
     title: 'Problema',
     image: {
-        source: bugImageUrl,
-          alt: 'Imagem de um inseto'
-      }
+      source: bugImageUrl,
+      alt: 'Imagem de um inseto'
+    }
   },
   IDEA: {
     title: 'Ideia',
     image: {
-        source: ideaImageUrl,
-        alt: 'Imagem de uma lâmpada'
+      source: ideaImageUrl,
+      alt: 'Imagem de uma lâmpada'
     }
   },
   OTHER: {
     title: 'Outro',
     image: {
-        source: thoughtImageUrl,
-        alt: 'Imagem de um balão de pensamento'
+      source: thoughtImageUrl,
+      alt: 'Imagem de um balão de pensamento'
     }
   }
 }
 
 export type FeedbackType = keyof typeof feedbackTypes;
 
-export function WidgetForm() {
-const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(null)
+export function WidgetForm () {
+  const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(null)
 
-  function handleRestartFeedback() {
-    setFeedbackType(null);
+  const [feedbackSent, setFeedbackSent] = useState(false)
 
+  const handleRestartFeedback = () => {
+    setFeedbackSent(false)
+    setFeedbackType(null)
   }
 
   return (
-  //calculando a 100% viewport -2rem, e para media maiores md fica automático
-    <div className="bg-zinc-900 p-4 relative rounded-2xl mb-4 flex-col items-center shadow-lg w-[calc(100vw-2rem)] md:w-auto">
+    // calculando a 100% viewport -2rem, e para media maiores md fica automático
+    <div className='bg-zinc-900 p-4 relative rounded-2xl mb-4 flex flex-col items-center shadow-lg w-[calc(100vw-2rem)] md:w-auto'>
+      {feedbackSent
+        ? (
+          <FeedbackSuccessStep onFeedbackRestartRequested={handleRestartFeedback} />
+          )
+        : (
+          <>
+            {!feedbackType
+              ? (
+                <FeedbackTypeStep onFeedbackTypeChanged={setFeedbackType} />
+                )
+              : (
+                <FeedbackContentStep
+                  feedbackType={feedbackType}
+                  onFeedbackRestartRequested={handleRestartFeedback}
+                  onFeedbackSent={() => setFeedbackSent(true)}
+                />
+                )}
+          </>
+          )}
 
-      {!feedbackType ? (
-      <FeedbackTypeStep onFeedbackTypeChanged={setFeedbackType} />
-    ) : (
-      <FeedbackContentStep
-        feedbackType={feedbackType}
-        onFeedbackRestartRequested={handleRestartFeedback}
-        />
-    )}
-
-    <footer
-        className="text-sl text-neutral-400">
-        Feito com ♥ por
-        <a
-        className="underline underline-offset-2" target="_blank" href="https://www.linkedin.com/in/lyssautida/"
-      >
-        Lyssa Utida
-      </a>
+      <footer className='text-sl text-neutral-400'> Feito com ♥ por <a className='underline underline-offset-2' target='_blank' href='https://www.linkedin.com/in/lyssautida/' rel='noreferrer'> Lyssa Utida </a>
       </footer>
-      </div>
-  );
+    </div>
+  )
 }
